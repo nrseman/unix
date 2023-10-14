@@ -23,7 +23,7 @@
   ```
 - Create filesystem
   ```bash
-  mk.f2fs /dev/sda6
+  mkfs.f2fs /dev/sda6
   ```
 - Mount root partition
   ```bash
@@ -32,19 +32,31 @@
   ```
 - Install deboostrap
   ```bash
-  wget http://ftp.debian.org/debian/pool/main/d/debootstrap/debootstrap_1.0.132_all.deb
   mkdir work
   cd work
+  wget http://ftp.debian.org/debian/pool/main/d/debootstrap/debootstrap_1.0.132_all.deb
   ar -x debootstrap_1.0.132_all.deb
   cd /
   zcat /full-path-to-work/data.tar.gz | tar xv
   ```
 - Run debootstrap
   ```bash
-  /usr/sbin/debootstrap --arch amd64 jammy/mantic /mnt/ubnt http://archive.ubuntu.com/ubuntu
+  /usr/sbin/debootstrap --arch amd64 jammy /mnt/ubnt http://archive.ubuntu.com/ubuntu
   ```
+- Configure apt
+  - /etc/apt/sources.list
+  - /etc/apt/preferences.d/ignored-packages
 - Chroot into new system
+  ```
+  arch-chroot /mnt/ubnt
+  ```
 - Configure base system
+  - Set time hwclock
+  - Set locale
+  - Set keybard
+  - apt update and upgrade
+  - apt install vim git tmux
+  - apt install linux-image-generic-hwe linux-headers-generic-hwe linux-firmware initranfs-tools efibootmgr 
 - Create device files (or udev?)
 - Edit fstab
 - Set timezone
