@@ -44,27 +44,60 @@
   /usr/sbin/debootstrap --arch amd64 jammy /mnt/ubnt http://archive.ubuntu.com/ubuntu
   ```
 - Configure apt
-  - /etc/apt/sources.list
-  - /etc/apt/preferences.d/ignored-packages
+  - /mnt/ubnt/etc/apt/sources.list
+    ```
+    deb http://archive.ubuntu.com/ubuntu jammy           main restricted universe
+    deb http://archive.ubuntu.com/ubuntu jammy-security  main restricted universe
+    deb http://archive.ubuntu.com/ubuntu jammy-updates   main restricted universe
+    ```
+  - /mnt/ubnt/etc/apt/preferences.d/ignored-packages
+    ```
+    Package: grub-common grub2-common grub-pc grub-pc-bin grub-gfxpayload-lists
+    Pin: release *
+    Pin-Priority: -1
+    
+    Package: snapd cloud-init landscape-common popularity-contest ubuntu-advantage-tools
+    Pin: release *
+    Pin-Priority: -1
+    ```
 - Chroot into new system
   ```
   arch-chroot /mnt/ubnt
   ```
-- Configure base system
-  - Set time hwclock
-  - Set locale
-  - Set keybard
+- Configure time-zone, locale, and keyboard
+  ```
+  dpkg-reconfigure tzdata
+  dpkg-reconfigure locales
+  dpkg-reconfigure keyboard-configuration
+  ```
+- Configure hwclock
+- Update, upgrade, and install
   - apt update and upgrade
+  - apt install linux-image-generic-hwe linux-headers-generic-hwe linux-firmware initranfs-tools
+  - apt install efibootmgr systemd-boot
   - apt install vim git tmux
-  - apt install linux-image-generic-hwe linux-headers-generic-hwe linux-firmware initranfs-tools efibootmgr 
-- Create device files (or udev?)
-- Edit fstab
-- Set timezone
 - Configure networking
-- Configure apt
-- Configure locales and keyboard
-- Install a kernel
+  - hostname
+  - lan
+- Edit fstab
+  ```
+  # <device>      <dir>  <type> <options> <dump> <fsck>
+  /dev/nvme0n1p1  /efi   vfat   defaults  0       2
+  /dev/nvme0n1p2  /msr   vfat   defaults  0       0
+  /dev/nvme0n1p3  /win   ntfs   defaults  0       0
+  /dev/nvme0n1p4  /wre   ntfs   defaults  0       0
+
+  /dev/nvme0n1p5  none   swap   defaults  0       0
+  /dev/nvme0n1p6  /      f2fs   defaults  0       1
+  /dev/nvme0n1p7  /guix  f2fs   defaults  0       0
+  /dev/nvme0n2p8  /arch  f2fs   defaults  0       0
+
+  /dev/nvme0n1p9  /home  f2fs   defaults  0       2  
+  /dev/nvme0n1p10 /gnu   f2fs   defaults  0       2
+  /dev/nvme0n1p11 /free  f2fs   defaults  0       0
+  ```
 - Set up boot loader
+  - systemd-boot
 - Configure ssh
 - Clean-up
 
