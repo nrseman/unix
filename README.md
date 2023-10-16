@@ -72,32 +72,54 @@
   ```
 - Configure hwclock
 - Update, upgrade, and install
-  - apt update and upgrade
-  - apt install linux-image-generic-hwe linux-headers-generic-hwe linux-firmware initranfs-tools
-  - apt install efibootmgr systemd-boot
-  - apt install vim git tmux
+  ```
+  apt update and upgrade
+  apt install linux-image-generic-hwe linux-headers-generic-hwe linux-firmware initranfs-tools
+  apt install efibootmgr systemd-boot
+  apt install vim git tmux
+  ```
+- Configure users
+  ```
+  passwd
+  adduser kjetil
+  usermod -a -G sudo kjetil
+  ```
 - Configure networking
-  - hostname
+  - Configure hostname
+    ```
+    echo "caja" > /etc/hostname
+    echo "127.0.1.1. caja" >> /etc/hosts 
+    ```
   - lan
 - Edit fstab
   ```
-  # <device>      <dir>  <type> <options> <dump> <fsck>
-  /dev/nvme0n1p1  /efi   vfat   defaults  0       2
-  /dev/nvme0n1p2  /msr   vfat   defaults  0       0
-  /dev/nvme0n1p3  /win   ntfs   defaults  0       0
-  /dev/nvme0n1p4  /wre   ntfs   defaults  0       0
+  # <device>      <dir>       <type> <options> <dump> <fsck>
+  /dev/nvme0n1p1  /efi        vfat   defaults  0       2
+  /dev/nvme0n1p2  /msr        vfat   defaults  0       0
+  /dev/nvme0n1p3  /win        ntfs   defaults  0       0
+  /dev/nvme0n1p4  /wre        ntfs   defaults  0       0
 
-  /dev/nvme0n1p5  none   swap   defaults  0       0
-  /dev/nvme0n1p6  /      f2fs   defaults  0       1
-  /dev/nvme0n1p7  /guix  f2fs   defaults  0       0
-  /dev/nvme0n2p8  /arch  f2fs   defaults  0       0
+  /dev/nvme0n1p5  none        swap   defaults  0       0
+  /dev/nvme0n1p6  /           f2fs   defaults  0       1
+  /dev/nvme0n1p7  /guix       f2fs   defaults  0       0
+  /dev/nvme0n2p8  /arch       f2fs   defaults  0       0
 
-  /dev/nvme0n1p9  /home  f2fs   defaults  0       2  
-  /dev/nvme0n1p10 /gnu   f2fs   defaults  0       2
-  /dev/nvme0n1p11 /free  f2fs   defaults  0       0
+  /dev/nvme0n1p9  /home       f2fs   defaults  0       2  
+  /dev/nvme0n1p10 /gnu        f2fs   defaults  0       2
+  /dev/nvme0n1p11 /free       f2fs   defaults  0       0
   ```
-- Set up boot loader
-  - systemd-boot
+- Set up `systemd-boot`
+  ```
+  bootctl install
+  cp --derefence /boot/{vmlinuz,initrd.img} /boot/efi/
+  ```
+  /boot/efi/loader/entries/ubuntu.conf
+  ```
+  title    ubuntu
+  linux    /vmlinuz
+  initrd   /initrd.img
+  options root=/dev/nvme0n1p6
+  ```
 - Configure ssh
 - Clean-up
 
