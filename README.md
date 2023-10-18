@@ -23,12 +23,13 @@
   ```
 - Create filesystem
   ```bash
-  mkfs.f2fs /dev/sda6
+  mkswap /dev/nvme0n1p5
+  mkfs.f2fs /dev/nvme0n1p6
   ```
 - Mount root partition
   ```bash
   mkdir -p /mnt/ubnt
-  mount -t f2fs /dev/sda6 /mnt/ubnt
+  mount -t f2fs /dev/nvme0n1p6 /mnt/ubnt
   ```
 - Install deboostrap
   ```bash
