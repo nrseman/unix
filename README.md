@@ -13,10 +13,11 @@
   /dev/sda3 /win       ntfs  800GB   WIN
   /dev/sda4 /wre       ntfs    1GB   WRE
   
+  /dev/sda5 /swap      f2fs   64GB  swap
   /dev/sda6 /ubnt      f2fs   64GB  ubnt
   /dev/sda7 /guix      f2fs   64GB  guix
   /dev/sda8 /arch      f2fs   64GB  arch
-  /dev/sda0 /swap      f2fs   64GB  swap
+ 
   /dev/sdaA /home      f2fs  256GB  home
   /dev/sdaA /data      f2fs  256GB  data
   /dev/sdaA /free      f2fs  256GB  free
@@ -31,7 +32,7 @@
   mkdir -p /mnt/ubnt
   mount -t f2fs /dev/nvme0n1p6 /mnt/ubnt
   ```
-- Install deboostrap
+- Install debootstrap
   ```bash
   mkdir work
   cd work
@@ -91,7 +92,14 @@
     echo "caja" > /etc/hostname
     echo "127.0.1.1. caja" >> /etc/hosts 
     ```
-  - lan
+  - `/etc/systemd/network/ethernet.network
+    ```
+    [Match]
+    Name=enp8s0
+
+    [Network]
+    DHCP=yes
+    ```
 - Edit fstab
   ```
   # <device>      <dir>       <type> <options> <dump> <fsck>
@@ -109,20 +117,24 @@
   /dev/nvme0n1p10 /gnu        f2fs   defaults  0       2
   /dev/nvme0n1p11 /free       f2fs   defaults  0       0
   ```
-- Set up `systemd-boot`
+- Set up boot manager
   ```
-  bootctl install
-  cp --derefence /boot/{vmlinuz,initrd.img} /boot/efi/
+  mkdir -p /efi/EFI/ubuntu
+  cp /boot/vmlinuz-6.2.0-34-generic /efi/EFI/ubuntu/vmlinuz-6.2.0-34.efi
+  cp /boot/initrd.img-6.2.0-34-generic /efi/EFI/ubuntu/initrd-6.2.0-34.img
   ```
-  /boot/efi/loader/entries/ubuntu.conf
   ```
-  title    ubuntu
-  linux    /vmlinuz
-  initrd   /initrd.img
-  options root=/dev/nvme0n1p6
+  efibootmgr -c -d /dev/nvme0n1 -p 1 -L "ubuntu" -l '\efi\ubuntu\vmlinuz-6.3.0-34.efi' -u 'root=/dev/nvme0n1p6 initrd=\efi\ubuntu\initramfs-6.2.0-34.img'
+  efibootmgr -o 0000,0001,0002
   ```
 - Configure ssh
-- Clean-up
+  ```
+  ssh-keygen -t ed25519 -C "your_email@example.com"
+  ```
+- Install packages
+  ```
+  sudo apt install vivaldi xinit i3-wm dmenu rxvt-unicode
+  ```
 
 ## References
 - https://www.debian.org/releases/stable/i386/apds03.en.html
@@ -132,3 +144,4 @@
 - https://wiki.archlinux.org/title/partitioning
 - https://www.debian.org/releases/bullseye/amd64/apcs03.en.html
 - https://semjonov.de/posts/2021-09/minimal-ubuntu-installation-with-debootstrap
+- https://wiki.gentoo.org/wiki/Efibootmgr
