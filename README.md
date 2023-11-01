@@ -1,4 +1,5 @@
 # A collection of UNIX related notes
 
-
-## [Installing minimal ubuntu using debootstrap](ubuntu.md)
+## Installation guides
+- [Installing minimal ubuntu using debootstrap](ubuntu.md)
+- [Installing guix](guix.md)
