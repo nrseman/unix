@@ -48,12 +48,23 @@ initdb -D /home/postgres/data --no-locale
 Without the `--no-locale` option, `postgresql` will use the default locale of your system. You
 can specify any supported locale with the `--locale=<locale>`option.
 
-### Starting and stopping the server
-Starting and stopping the server
+### Server management
+Before we can start the server, we have to make sure that the folder `/var/run/postgres` exists
+and that it is owned by the `postgres` user and group
+```bash
+sudo mkdir /var/run/postgresql
+sudo chown -R postgres:postgres /var/run/postgresql
+```
+The server can now be started with `pg_ctl start`
 ```bash
 pg_ctl start -D /home/postgres/data -l logfile
+```
+Similarly, the server can be stopped with `pg_ctl stop`
+```bash
 pg_ctl stop  -D /home/postgres/data
 ```
+There are several other `pg_ctl` subcommands.
+
 
 ### Creating a user
 ```sql
