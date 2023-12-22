@@ -1,8 +1,40 @@
-# Cuirass -- A CI/CD system build on top of `guix`
+# Continuous integration with `guix`
 
+## `cuirass
+
+### Installation
+It is advisable to run `cuirass` server as dedicated user
+```bash
+sudo useradd -m -s /bin/bash cuirass
+```
+Switch to `cuirass` user and install `cuirass`
+```bash
+sudo su cuirass
+guix pull
+guix install cuirass
+```
+You may have to update your environment after installation
+```bash
+GUIX_PROFILE=$HOME/.guix-profile
+. ${GUIX_PROFILE}/etc/profile
+```
+Depending on how profiles are configured on your system, you may have to put the above in
+`/home/cuirass/.bashrc` to make the environment updated permanent.
+
+###  Locales
+`cuirass` supports locales, but it will not work unless guix `locale` support is installed
+```bash
+guix install glibc-locales
+```
+Once again, you may have to update your environment after installation
+```bash
+GUIX_PROFILE=$HOME/.guix-profile
+export GUIX_LOCPATH=${GUIX_PROFILE}/lib/locale
+```
+Depending on how profiles are configured on your system, you may have to put the above in
+`/home/cuirass/.bashrc` to make the environment updated permanent.
 
 ## `postgresql`
-
 
 ### Installation
 It is advisable to run `postgresql` server as dedicated user
@@ -25,7 +57,7 @@ Depending on how profiles are configured on your system, you may have to put the
 `/home/postgresql/.bashrc` to make the environment updated permanent.
 
 ###  Locales
-Postgresql supports locales, but it will not work unless guix locale support is installed
+`postgresql` supports locales, but it will not work unless `guix` locale support is installed
 ```bash
 guix install glibc-locales
 ```
