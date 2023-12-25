@@ -59,3 +59,5 @@ cuirass web
 Note that the continous integration server must be started before the web server as the 
 former creates a socket at `/var/run/cuirass/bridge` to which the latter must connect. 
 
+## References
+- https://othacehe.org/building-your-own-channels.html

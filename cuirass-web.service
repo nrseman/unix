@@ -1,0 +1,19 @@
+[Unit]
+Description=Cuirass web server
+Requires=cuirass-ci.service
+After=cuirass-ci.service
+
+[Service]
+#Type=forking
+User=cuirass
+#RuntimeDirectory=cuirass
+ExecStart=/home/cuirass/.guix-profile/bin/cuirass web
+#ExecStop=/home/postgres/.guix-profile/bin/pg_ctl stop
+#ExecReload=/home/postgres/.guix-profile/bin/pg_ctl reload 
+#OOMScoreAdjust=-1000
+#TimeoutSec=300
+Restart=always
+#RestartSec=30s
+
+[Install]
+WantedBy=multi-user.target
