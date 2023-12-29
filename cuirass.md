@@ -33,14 +33,6 @@ Depending on how profiles are configured on your system, you may have to put the
 `/home/cuirass/.bashrc` to automate the environment settings for future login.
 
 
-## Socket directory
-Before we can start a `cuirass` service, we have to make sure that the folder `/var/run/cuirass` exists
-and that it is owned by the `cuirass` user and group
-```bash
-sudo mkdir /var/run/cuirass
-sudo chown -R cuirass:cuirass /var/run/cuirass
-```
-
 ## Database configuration
 By default `cuirass` uses `postgresql` as a database backend for storing artifacts assoicated
 with the continuous integration. A quickstart guide on how to get `postgresql` up and running is
@@ -61,13 +53,22 @@ QUIT;
 ```
 
 ## Testing `cuirass` services
-The continuous integration server is started with
+Before we can start a `cuirass` service, we have to make sure that the folder `/var/run/cuirass` exists
+and that it is owned by the `cuirass` user and group
+```bash
+sudo mkdir /var/run/cuirass
+sudo chown -R cuirass:cuirass /var/run/cuirass
 ```
+
+The continuous integration server can now be  started with
+```
+sudo su cuirass -s/bin/bash
 cuirass register --specifications <specs>
 ```
 We will discuss the specifications file in more detail below, but for initial testing we can
 simply omit it. A web interface to the continuous integration server is also available
 ```
+sudo su cuirass -s/bin/bash
 cuirass web --listen=<host> --port=<port>
 ```
 Note that the continous integration server must be started before the web server as the 
