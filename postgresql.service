@@ -6,6 +6,7 @@ Type=forking
 User=postgres
 RuntimeDirectory=postgresql
 #Environment=PGPORT=5432
+Environment=GUIX_LOCPATH=/home/postgres/.guix-profile/lib/locale
 Environment=PGDATA=/home/postgres/data
 ExecStart=/home/postgres/.guix-profile/bin/pg_ctl start
 ExecStop=/home/postgres/.guix-profile/bin/pg_ctl stop
