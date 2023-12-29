@@ -104,16 +104,16 @@ In order to verify that the service works as expected, you can run the following
 commands
 ```
 sudo systemctl daemon-reload
-sudo systemctl start postgreql
-sudo systemctl status postgreql
-sudo systemctl stop postgreql
-sudo systemctl status postgreql
+sudo systemctl start postgresql
+sudo systemctl status postgresql
+sudo systemctl stop postgresql
+sudo systemctl status postgresql
 ```
 If you want to make any changes, edit the `postgresql.service` file and rerun the
 command above. Once you are satisfied, you can enable the sevice permanently by
 executing.
 ```
-sudo sytemctl enable postgreql
+sudo sytemctl enable postgresql
 ```
 However, if you plan to use `postgresql` as a backend for other services, it is
 better to configure those services to depend on `postgreql` instead.
