@@ -32,6 +32,12 @@ Sourcing the profile adds the directory of `guix` managed executables to the pat
 Depending on how profiles are configured on your system, you may have to put the above in
 `/home/cuirass/.bashrc` to automate the environment settings for future login.
 
+By default `cuirass` will create log files under `/var/log/cuirass`, so we make sure that
+folder is created with appriate user and group ownership.
+```bash
+sudo mkdir /var/log/cuirass
+sudo chown -R cuirass:cuirass /var/run/cuirass
+```
 
 ## Database configuration
 By default `cuirass` uses `postgresql` as a database backend for storing artifacts assoicated
@@ -50,6 +56,24 @@ and subsequently execute the following sql-queries
 CREATE USER cuirass;
 CREATE DATABASE cuirass OWNER cuirass;
 QUIT;
+```
+
+## SSH configuration
+If ssh keys are required to access the git repositories where your guix channels are hosted, we
+need to create a passwordless ssh key and configure the git server to accept it as a deployment key
+for the repository and/or an identification key for a user with access to the repository. The former
+is preferred as it allows to limit the scope to read access to a single repository. Follow the usual
+steps to create a private-public ssh-key pair
+```
+sudo su cuirass -s/bin/bash
+ssh-keygen -t ed25519
+```
+
+Use the public key to configure access to your git repository/user, and if desirable, configure
+ssh-agent to always load the key
+```
+sudo su cuirass -s/bin/bash
+cat "AddKeysToAgent  yes" >> $HOME/.ssh/config
 ```
 
 ## Testing `cuirass` services
@@ -71,26 +95,47 @@ simply omit it. A web interface to the continuous integration server is also ava
 sudo su cuirass -s/bin/bash
 cuirass web --listen=<host> --port=<port>
 ```
-Note that the continous integration server must be started before the web server as the 
+Note that the continous integration server must be started before the web server as the
 former creates a socket at `/var/run/cuirass/bridge` to which the latter must connect. The
 `listen` and `port` options specify which interface to monitor incoming http requests.
 Defaultas are `localhost` and `8080`, respectively.
 
 ## Creating services
 Cuirass offers several services. Here we are only interested in the ci and web services. In the
-following we provide minimalistic `systemd` service files that you can copy to the 
+following we provide minimalistic `systemd` service files that you can copy to the
 `/etc/systemd/system` folder.
 
+### cuirass-ssh
+We first create a `cuirass-ssh` service to start the `ssh-agent` and load the ssh keys.
+```
+[Unit]
+Description=SSH key agent for cuirass
+
+[Service]
+Type=simple
+User=cuirass
+RuntimeDirectory=cuirass
+Environment=SSH_AUTH_SOCK=%t/cuirass/ssh-agent.socket
+ExecStart=/usr/bin/ssh-agent -D -a $SSH_AUTH_SOCK
+ExecStartPost=/usr/bin/ssh-add /home/cuirass/.ssh/id_ed25519
+
+[Install]
+WantedBy=default.target
+```
+
 ### cuirass-ci
-We first create a `cuirass-ci` service and make sure it depends on the `postgresql` service
+Next, we create a `cuirass-ci` service and make sure it depends on the `postgresql` and
+`cuirass-ssh` services
 ```
 [Unit]
 Description=Cuirass CI server
 Requires=postgresql.service
+Requires=cuirass-ssh.service
 
 [Service]
 User=cuirass
 RuntimeDirectory=cuirass
+Environment=SSH_AUTH_SOCK=%t/cuirass/ssh-agent.socket
 ExecStart=/home/cuirass/.guix-profile/bin/cuirass register
 
 [Install]
@@ -119,7 +164,7 @@ sudo systemctl status cuirass-ci
 ```
 
 ### cuirass-web
-Next, we create a `cuirass-web` service which provides a web-based frontend to `cuirass-ci` 
+Next, we create a `cuirass-web` service which provides a web-based frontend to `cuirass-ci`
 and make sure that it depends on the `cuirass-ci` service
 ```
 [Unit]
@@ -163,6 +208,23 @@ sudo systemctl status cuirass-ci
 sudo systemctl stop cuirass-web
 sudo systemctl status cuirass-web
 ```
+
+
+## cuirass specification file
+```scheme
+(list (specification
+        (name "guile")
+        (build '(channels guile))
+        (channels
+         (append (list (channel
+                         (name 'guile)
+                         (url "https://git.savannah.gnu.org/git/guile.git")
+                         (branch "main")))
+                 %default-channels))))
+```
+wget --post-data="" -O /dev/null <host>:<port>/jobset/<name>/hook/evaluate
+
+
 
 ## References
 - https://othacehe.org/building-your-own-channels.html
