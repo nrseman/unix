@@ -1,11 +1,12 @@
 [Unit]
 Description=Cuirass CI server
 Requires=postgresql.service
+Requires=cuirass-ssh.service
 
 [Service]
-#Type=simple
 User=cuirass
 RuntimeDirectory=cuirass
+Environment=SSH_AUTH_SOCK=%t/cuirass/ssh-agent.socket
 ExecStart=/home/cuirass/.guix-profile/bin/cuirass register
 
 [Install]

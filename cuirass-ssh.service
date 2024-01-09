@@ -1,0 +1,14 @@
+[Unit]
+Description=SSH agent for cuirass
+
+[Service]
+Type=simple
+User=cuirass
+RuntimeDirectory=cuirass
+Environment=SSH_AUTH_SOCK=%t/cuirass/ssh-agent.socket
+ExecStart=/usr/bin/ssh-agent -D -a $SSH_AUTH_SOCK
+ExecStartPost=/usr/bin/ssh-add /home/cuirass/.ssh/id_ed25519
+
+[Install]
+WantedBy=default.target
+
