@@ -3,3 +3,4 @@
 ## Installation guides
 - [Installing minimal ubuntu using debootstrap](ubuntu.md)
 - [Installing guix](guix.md)
+- [Installing cgit](cgit.md)
